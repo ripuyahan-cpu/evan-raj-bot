@@ -1,335 +1,223 @@
-// ==========================================================
-// ইসলামিক সাইবার চ্যাট - ডিঅবফাস্কেটেড (পাথ অপরিবর্তিত)
-// মূল অবস্কিউরেটেড কোডের ১:১ ডিঅবফাস্কেটেড ভার্সন
-// ==========================================================
+const { spawn, exec } = require("child_process");
+const axios = require("axios");
+const logger = require("./utils/log");
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
 
-const moment = require('moment-timezone');
-const { readdirSync, readFileSync, writeFileSync, existsSync, unlinkSync, rm } = require('fs');
-const { join, resolve } = require('path');
-const { execSync } = require('child_process');
-const logger = require('./utils/log');
-const login = require('fca-priyansh');
-const axios = require('axios');
+// ============================================================
+// ╔═══════════════════════════════════════════════════════════╗
+// ║   🚀 EVAN RAJ BOT LAUNCHER 🚀                           ║
+// ║   ⚡ Cyber Mirai Framework                              ║
+// ║   👑 Powered by EVAN RAJ                               ║
+// ╚═══════════════════════════════════════════════════════════╝
+// ============================================================
 
-const packageJson = JSON.parse(readFileSync('./package.json', 'utf8'));
-const listPackage = Object.keys(packageJson.dependencies || {});
-const listbuiltinModules = require('module').builtinModules;
+const BOT_NAME = "👑 EVAN RAJ";
 
-// ==================== গ্লোবাল অবজেক্ট ====================
-global.client = new Object({
-  commands: new Map(),
-  events: new Map(),
-  cooldowns: new Map(),
-  eventRegistered: new Array(),
-  handleSchedule: new Array(),
-  handleReaction: new Array(),
-  handleReply: new Array(),
-  mainPath: process.cwd(),
-  configPath: new String(),
-  getTime: function (type) {
-    const tz = 'Asia/Dhaka';
-    switch (type) {
-      case 'seconds': return '' + moment.tz(tz).format('ss');
-      case 'minutes': return '' + moment.tz(tz).format('mm');
-      case 'hours': return '' + moment.tz(tz).format('HH');
-      case 'date': return '' + moment.tz(tz).format('DD');
-      case 'month': return '' + moment.tz(tz).format('MM');
-      case 'year': return '' + moment.tz(tz).format('YYYY');
-      case 'fullTime': return '' + moment.tz(tz).format('HH:mm:ss');
-      case 'fullDate': return '' + moment.tz(tz).format('DD/MM/YYYY');
-      case 'fullYear': return '' + moment.tz(tz).format('YYYY');
-      default: return '' + moment.tz(tz).format('HH:mm:ss DD/MM/YYYY');
-    }
-  }
+// 📢 Show stylish banner at startup
+function showBanner() {
+    const banner = `
+    ╔══════════════════════════════════════════════════════════╗
+    ║                                                          ║
+    ║     🚀 ███████╗██╗   ██╗ █████╗ ███╗   ██╗             ║
+    ║     🚀 ██╔══██║██║   ██║██╔══██╗████╗  ██║             ║
+    ║     🚀 ███████║██║   ██║███████║██╔██╗ ██║             ║
+    ║     🚀 ██╔══██║╚██╗ ██╔╝██╔══██║██║╚██╗██║             ║
+    ║     🚀 ███████║ ╚████╔╝ ██║  ██║██║ ╚████║             ║
+    ║     🚀 ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚═╝  ╚═══╝             ║
+    ║                                                          ║
+    ║              🔥 BOT LAUNCHER v2.0 🔥                    ║
+    ║           👨‍💻 Maintained by EVAN RAJ 👨‍💻               ║
+    ║           ⚡ Cyber Mirai | Auto-Update ⚡               ║
+    ║                                                          ║
+    ╚══════════════════════════════════════════════════════════╝
+    `;
+    console.log(banner);
+}
+
+///////////////////////////////////////////////////////////
+//========= 🌐 Create website for dashboard/uptime ======//
+///////////////////////////////////////////////////////////
+const app = express();
+const port = process.env.PORT || 8080;
+
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, '/index.html'));
 });
 
-global.data = new Object({
-  threadInfo: new Map(),
-  threadData: new Map(),
-  userName: new Map(),
-  userBanned: new Map(),
-  threadBanned: new Map(),
-  commandBanned: new Map(),
-  threadAllowNSFW: new Array(),
-  allUserID: new Array(),
-  allCurrenciesID: new Array(),
-  allThreadID: new Array()
+app.listen(port, () => {
+    logger(`🌐 Server running on port ${port} for ${BOT_NAME} ✅`, "[ STARTING ]");
+}).on('error', (err) => {
+    if (err.code === 'EACCES') {
+        logger(`🚫 Permission denied. Cannot bind to port ${port}.`, "[ Error ]");
+    } else {
+        logger(`❌ Server error: ${err.message}`, "[ Error ]");
+    }
 });
 
-global.modules = require('module');
-global.config = new Object();
-global.handleReaction = new Object();
-global.handleReply = new Object();
-global.eventRegistered = new Array();
-global.handleSchedule = new Array();
+/////////////////////////////////////////////////////////
+//========= ⚡ Improved Bot Launcher with Auto-Update ==//
+/////////////////////////////////////////////////////////
 
-// ==================== কনফিগ লোড ====================
-let configValue;
-try {
-  global.client.configPath = join(global.client.mainPath, 'config.js');
-  configValue = require(global.client.configPath);
-  logger('Config Loaded Successfully!', '[ CONFIG ]');
-} catch {
-  if (existsSync(global.client.configPath.replace(/\.js/g, '.json'))) {
-    configValue = readFileSync(global.client.configPath.replace(/\.js/g, '.json'), 'utf8');
-    configValue = JSON.parse(configValue);
-    logger('Found config file: ' + (global.client.configPath.replace(/\.js/g, '.json')));
-  } else {
-    logger('Config file not found!', 'ERROR');
-    return;
-  }
+global.countRestart = global.countRestart || 0;
+let botProcess = null;
+let isShuttingDown = false;
+let currentStartTime = Date.now();
+
+// 📦 Local package.json read (with cache bypass)
+function getLocalPackage() {
+    delete require.cache[require.resolve('./package.json')];
+    return require('./package.json');
 }
 
-try {
-  for (const key in configValue) {
-    global.config[key] = configValue[key];
-  }
-  logger('Config values loaded to global!');
-} catch {
-  logger('Failed to load config values into global!', 'ERROR');
-}
-
-// ==================== ল্যাঙ্গুয়েজ লোড ====================
-const langFile = readFileSync(
-  __dirname + '/languages/' + (global.config.language || 'en') + '.lang',
-  { encoding: 'utf8' }
-).split(/\r?\n|\r/);
-
-const langData = langFile.filter(line => line.indexOf('#') !== 0 && line != '');
-
-for (const item of langData) {
-  const getSeparator = item.indexOf('=');
-  const itemKey = item.slice(0, getSeparator);
-  const itemValue = item.slice(getSeparator + 1, item.length);
-  const head = itemKey.slice(0, itemKey.indexOf('.'));
-  const key = itemKey.replace(head + '.', '');
-  const value = itemValue.replace(/\\n/gi, '\n');
-
-  if (typeof global.language[head] !== 'object') global.language[head] = new Object();
-  global.language[head][key] = value;
-}
-
-global.getText = function (...args) {
-  const lang = global.language;
-  if (!lang.hasOwnProperty(args[0])) {
-    throw __filename + ' : Language key not found: ' + args[0];
-  }
-  let text = lang[args[0]][args[1]];
-  for (let i = 2; i < args.length; i++) {
-    text = text.replace(new RegExp('%' + i, 'g'), args[i]);
-  }
-  return text;
-};
-
-// ==================== আপস্টেট লোড ====================
-let appStateFile;
-try {
-  const appStatePath = global.config.APPSTATEPATH || 'appstate.json';
-  appStateFile = resolve(join(global.client.mainPath, appStatePath));
-  const appState = require(appStateFile);
-  logger(global.getText('loader', 'successLoadAppstate', 'AppState'));
-} catch {
-  logger(global.getText('loader', 'notFoundAppstate'), 'ERROR');
-  return;
-}
-
-// ==================== বটের মূল ফাংশন ====================
-function onBot({ models }) {
-  login({ appState: appStateFile }, async (err, api) => {
-    if (err) {
-      logger(JSON.stringify(err), 'ERROR');
-      return;
-    }
-
-    api.setOptions(global.config.FCAOption || { forceLogin: true, listenEvents: true });
-    global.client.api = api;
-    global.client.timeStart = new Date().getTime();
-
-    // ----------------- কমান্ড লোডার -----------------
-    (function loadCommands() {
-      const commandFiles = readdirSync(
-        join(global.client.mainPath, 'includes', 'commands')
-      ).filter(file => file.endsWith('.js') && !global.config.disabledCommands?.includes(file));
-
-      for (const file of commandFiles) {
-        try {
-          let command = require(join(global.client.mainPath, 'includes', 'commands', file));
-          if (!command.config || !command.run || !command.config.name) {
-            throw new Error(global.getText('loader', 'missingModuleProps'));
-          }
-          if (global.client.commands.has(command.config.name)) {
-            throw new Error(global.getText('loader', 'duplicateCommandName'));
-          }
-
-          // ডিপেন্ডেন্সি অটো-ইন্সটল
-          if (command.config.dependencies) {
-            for (const dep in command.config.dependencies) {
-              try {
-                if (!global.modules[dep]) {
-                  if (listPackage.includes(dep) || listbuiltinModules.includes(dep)) {
-                    global.modules[dep] = require(dep);
-                  } else {
-                    global.modules[dep] = require(join(__dirname, 'includes', 'modules', dep));
-                  }
-                }
-              } catch (e) {
-                logger(global.getText('loader', 'cantInstallDep', dep, command.config.name), 'WARN');
-                execSync(
-                  `npm install ${dep}${command.config.dependencies[dep] !== '*' && command.config.dependencies[dep] !== '' ? '@' + command.config.dependencies[dep] : ''}`,
-                  { stdio: 'inherit', env: process.env, shell: true, cwd: join(__dirname, 'includes') }
-                );
-                let installed = false;
-                for (let retry = 0; retry < 3; retry++) {
-                  try {
-                    delete require.cache[require.resolve(dep)];
-                    if (listPackage.includes(dep) || listbuiltinModules.includes(dep)) {
-                      global.modules[dep] = require(dep);
-                    } else {
-                      global.modules[dep] = require(join(__dirname, 'includes', 'modules', dep));
-                    }
-                    installed = true;
-                    break;
-                  } catch (_) {}
-                }
-                if (!installed) {
-                  throw global.getText('loader', 'installFail', dep, command.config.name);
-                }
-              }
-            }
-          }
-
-          // ইভেন্ট ডাটা সেট
-          if (command.config.event) {
-            if (typeof global.data.eventData[command.config.name] !== 'object') {
-              global.data.eventData[command.config.name] = {};
-            }
-            for (const key in command.config.event) {
-              if (typeof global.data.eventData[command.config.name][key] !== 'object') {
-                global.data.eventData[command.config.name][key] = command.config.event[key];
-              }
-            }
-          }
-
-          global.client.commands.set(command.config.name, command);
-          logger(global.getText('loader', 'successLoadCmd', command.config.name));
-
-        } catch (error) {
-          logger(global.getText('loader', 'failLoadCmd', file, error.message), 'WARN');
-        }
-      }
-      logger(global.getText('loader', 'finishLoadCmd', global.client.commands.size));
-    })();
-
-    // ----------------- ইভেন্ট লোডার -----------------
-    (function loadEvents() {
-      const eventFiles = readdirSync(
-        join(global.client.mainPath, 'includes', 'events')
-      ).filter(file => file.endsWith('.js') && !global.config.disabledEvents?.includes(file));
-
-      for (const file of eventFiles) {
-        try {
-          let event = require(join(global.client.mainPath, 'includes', 'events', file));
-          if (!event.config || !event.run || !event.config.name) {
-            throw new Error(global.getText('loader', 'missingModuleProps'));
-          }
-          if (global.client.events.has(event.config.name)) {
-            throw new Error(global.getText('loader', 'duplicateEventName'));
-          }
-
-          // ডিপেন্ডেন্সি অটো-ইন্সটল
-          if (event.config.dependencies) {
-            for (const dep in event.config.dependencies) {
-              try {
-                if (!global.modules[dep]) {
-                  if (listPackage.includes(dep) || listbuiltinModules.includes(dep)) {
-                    global.modules[dep] = require(dep);
-                  } else {
-                    global.modules[dep] = require(join(__dirname, 'includes', 'modules', dep));
-                  }
-                }
-              } catch (e) {
-                logger(global.getText('loader', 'cantInstallDep', dep, event.config.name), 'WARN');
-                execSync(
-                  `npm install ${dep}${event.config.dependencies[dep] !== '*' && event.config.dependencies[dep] !== '' ? '@' + event.config.dependencies[dep] : ''}`,
-                  { stdio: 'inherit', env: process.env, shell: true, cwd: join(__dirname, 'includes') }
-                );
-                let installed = false;
-                for (let retry = 0; retry < 3; retry++) {
-                  try {
-                    delete require.cache[require.resolve(dep)];
-                    if (listPackage.includes(dep) || listbuiltinModules.includes(dep)) {
-                      global.modules[dep] = require(dep);
-                    } else {
-                      global.modules[dep] = require(join(__dirname, 'includes', 'modules', dep));
-                    }
-                    installed = true;
-                    break;
-                  } catch (_) {}
-                }
-                if (!installed) {
-                  throw global.getText('loader', 'installFail', dep, event.config.name);
-                }
-              }
-            }
-          }
-
-          global.client.events.set(event.config.name, event);
-          logger(global.getText('loader', 'successLoadEvt', event.config.name));
-
-        } catch (error) {
-          logger(global.getText('loader', 'failLoadEvt', file, error.message), 'WARN');
-        }
-      }
-      logger(global.getText('loader', 'finishLoadEvt', global.client.events.size));
-    })();
-
-    // ----------------- স্টার্টআপ টাইম -----------------
-    logger(global.getText('loader', 'startupTime', global.client.commands.size, global.client.events.size));
-    logger('Startup Time: ' + ((Date.now() - global.client.timeStart) / 1000).toFixed(2) + 's');
-    logger('Loaded: ' + global.client.commands.size + ' commands & ' + global.client.events.size + ' events');
-
-    // অস্থায়ী কনফিগ ফাইল ডিলিট
-    writeFileSync(global.client.configPath, JSON.stringify(global.config, null, 4), 'utf8');
-    unlinkSync(global.client.configPath + '.temp');
-
-    // ----------------- লিসেনার -----------------
-    const listener = require('./utils/listener')({ api, models });
-
-    const handleMessage = (err, message) => {
-      if (err) {
-        logger(global.getText('loader', 'listenError', JSON.stringify(err)), 'ERROR');
-        return;
-      }
-      if (['presence', 'typ', 'read_receipt'].includes(message.type)) return;
-      if (global.config.debug) console.log(message);
-      listener(message);
-    };
-
-    global.listenMqtt = api.listenMqtt(handleMessage);
-
-    // ----------------- ব্যান চেক -----------------
+// 🔄 Check for updates on GitHub (Managed by EVAN RAJ)
+async function checkForUpdates(forceRestart = false) {
     try {
-      require('./utils/checkBan')(api);
-    } catch (e) {}
+        const localPkg = getLocalPackage();
+        logger(`📦 Checking for updates from GitHub...`, "[ UPDATE ]");
+        const response = await axios.get(
+            "https://raw.githubusercontent.com/islamickcyber404/CYBER-MARAI-BOT/refs/heads/main/package.json",
+            { timeout: 10000 }
+        );
+        const remotePkg = response.data;
 
-    if (!global.NODB) {
-      logger(global.getText('loader', 'successConnectDb'), 'DATABASE');
+        if (remotePkg.version && localPkg.version !== remotePkg.version) {
+            logger(`🎉 ${BOT_NAME} - New version found! Local: ${localPkg.version} ➜ Remote: ${remotePkg.version} 🚀`, "[ UPDATE ]");
+            logger(`⬇️ ${BOT_NAME} is pulling latest changes from GitHub...`, "[ UPDATE ]");
+
+            // Force pull to overwrite local changes (safe for bots)
+            exec('git fetch origin && git reset --hard origin/main', { cwd: __dirname }, (error, stdout, stderr) => {
+                if (error) {
+                    logger(`❌ ${BOT_NAME}'s update failed: ${error.message}`, "[ UPDATE ERROR ]");
+                    return;
+                }
+                logger(`✅ ${BOT_NAME}'s Git pull successful! 🎉\n${stdout}`, "[ UPDATE ]");
+                if (stderr) logger(`⚠️ ${stderr}`, "[ UPDATE WARN ]");
+
+                // Reload local package after pull
+                const newLocalPkg = getLocalPackage();
+                logger(`📦 ${BOT_NAME} updated to version ${newLocalPkg.version} ✅`, "[ UPDATE ]");
+
+                // Restart the bot process to apply changes
+                if (botProcess && !botProcess.killed) {
+                    logger(`🔪 Killing old process to apply ${BOT_NAME}'s updates... ⏳`, "[ UPDATE ]");
+                    botProcess.kill('SIGTERM');
+                }
+                // Reset restart counter after successful update
+                global.countRestart = 0;
+                // Small delay to ensure old process exits, then start fresh
+                setTimeout(() => startBot(`♻️ Restarting ${BOT_NAME} after auto-update...`), 2000);
+            });
+        } else {
+            if (forceRestart) {
+                logger(`✅ ${BOT_NAME} is already up to date. 📌`, "[ UPDATE ]");
+            }
+        }
+    } catch (err) {
+        // Don't crash the launcher if update check fails
+        logger(`⚠️ ${BOT_NAME}'s update check failed: ${err.message}`, "[ UPDATE WARN ]");
     }
-  });
 }
 
-// ==================== ডেটাবেস কানেক্ট ====================
-(async () => {
-  try {
-    const { Sequelize, sequelize } = require('./database');
-    await sequelize.authenticate();
-    const models = { Sequelize, sequelize };
-    logger(global.getText('loader', 'successConnectDb'), 'DATABASE');
-    onBot({ models });
-  } catch (err) {
-    logger(global.getText('loader', 'failConnectDb', JSON.stringify(err)), 'DATABASE');
-  }
-})();
+function startBot(message) {
+    if (isShuttingDown) return;
 
-// আনহ্যান্ডেলড রিজেকশন হ্যান্ডলার
-process.on('unhandledRejection', (reason, promise) => {});
+    if (message) logger(message, "[ STARTING ]");
+
+    // Reset counter if bot ran stable for > 60 seconds
+    if (global.countRestart > 0 && (Date.now() - currentStartTime) > 60000) {
+        global.countRestart = 0;
+        logger(`✅ ${BOT_NAME} ran stable for 60s. Restart counter reset to 0. 🛡️`, "[ STABLE ]");
+    }
+
+    logger(`⚡ Spawning ${BOT_NAME} process...`, "[ LAUNCH ]");
+    botProcess = spawn("node", ["--trace-warnings", "--async-stack-traces", "cyber.js"], {
+        cwd: __dirname,
+        stdio: "inherit",
+        shell: true
+    });
+
+    currentStartTime = Date.now();
+
+    botProcess.on("close", (codeExit) => {
+        if (isShuttingDown) {
+            logger(`🛑 ${BOT_NAME} bot process closed gracefully. 👋`, "[ SHUTDOWN ]");
+            return;
+        }
+
+        if (codeExit !== 0 && global.countRestart < 5) {
+            global.countRestart += 1;
+            logger(`💥 ${BOT_NAME} bot exited with code ${codeExit}. Restarting... 🔁 (${global.countRestart}/5)`, "[ RESTARTING ]");
+            // Wait 3 seconds before restart to avoid CPU spikes
+            setTimeout(() => startBot(`⏳ Re-spawning ${BOT_NAME}...`), 3000);
+        } else if (codeExit !== 0) {
+            logger(`🚨 ${BOT_NAME} bot stopped permanently after ${global.countRestart} consecutive crashes. ❌`, "[ STOPPED ]");
+            logger(`🛠️ Manual restart required or check cyber.js for errors. - ${BOT_NAME}`, "[ FATAL ]");
+        } else {
+            logger(`✅ ${BOT_NAME} bot exited normally with code ${codeExit}. 🎯`, "[ STOPPED ]");
+        }
+    });
+
+    botProcess.on("error", (error) => {
+        // Proper error logging (shows stack trace)
+        logger(`🔥 Child process error (${BOT_NAME}): ${error.stack || error.message}`, "[ Error ]");
+    });
+}
+
+////////////////////////////////////////////////
+//========= 🛑 Graceful Shutdown Handler ======//
+////////////////////////////////////////////////
+
+function shutdown(signal) {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+    logger(`📡 Received ${signal}. ${BOT_NAME} launcher is shutting down gracefully... 🛑`, "[ SHUTDOWN ]");
+
+    if (botProcess && !botProcess.killed) {
+        logger(`⏳ Sending SIGTERM to ${BOT_NAME} bot...`, "[ SHUTDOWN ]");
+        botProcess.kill('SIGTERM');
+        // Force kill after 5 seconds if it doesn't exit
+        setTimeout(() => {
+            if (botProcess && !botProcess.killed) {
+                logger(`⚡ Force killing ${BOT_NAME} bot process... 💀`, "[ SHUTDOWN ]");
+                botProcess.kill('SIGKILL');
+            }
+        }, 5000);
+    }
+
+    // Exit parent process after giving child time to clean up
+    setTimeout(() => {
+        logger(`👋 ${BOT_NAME} launcher exiting. Bye!`, "[ SHUTDOWN ]");
+        process.exit(0);
+    }, 1000);
+}
+
+// Catch system signals
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('uncaughtException', (err) => {
+    logger(`💀 Uncaught Exception in ${BOT_NAME} launcher: ${err.stack}`, "[ FATAL ]");
+    // Don't exit, just log
+});
+
+////////////////////////////////////////////////
+//========= 🚀 Start Everything ==============//
+////////////////////////////////////////////////
+
+// 🖥️ Show the stylish banner first
+showBanner();
+
+// 1. Check for updates on startup (but don't block starting)
+setTimeout(() => checkForUpdates(true), 3000);
+
+// 2. Start the bot
+startBot(`🚀 Starting ${BOT_NAME} Bot Launcher... ⚡`);
+
+// 3. Periodic update check every 1 hour (3600000 ms)
+setInterval(() => checkForUpdates(false), 3600000);
+
+// 4. Final credit & status messages
+logger(`🏆 ${BOT_NAME} Bot is now ONLINE and READY! ✅`, "[ CREDIT ]");
+logger(`🔄 Auto-updater enabled for ${BOT_NAME}. Will check every hour. ⏰`, "[ SYSTEM ]");
+logger(`💡 For support, contact @EVAN_RAJ on Telegram. 📱`, "[ SYSTEM ]");
