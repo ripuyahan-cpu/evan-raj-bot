@@ -1,0 +1,146 @@
+{
+    "language": "en",
+    "DeveloperMode": false,
+    "autoCreateDB": true,
+    "notiGroup": true,
+    "NOTIFICATION": true,
+    "allowInbox": false,
+    "autoClean": true,
+    "commandDisabled": [],
+    "eventDisabled": [],
+    "BOTNAME": "𝐄𝐕𝐀𝐍 𝐑𝐀𝐉 𝐁𝐎𝐓",
+    "PREFIX": "!",
+    "ADMINBOT": ["100006420851274"],
+    "APPSTATEPATH": "appstate.json",
+    "updateRepoURL": "https://raw.githubusercontent.com/ripuyahan-cpu/evan-raj-bot/main/package.json",
+    "FCAOption": {
+        "forceLogin": true,
+        "listenEvents": true,
+        "pauseLog": true,
+        "logLevel": "error",
+        "selfListen": false,
+        "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Mobile/15E148 Safari/604.1"
+    },
+    "version": "2.0.0",
+
+    "DAILY": {
+        "cooldownTime": 43200000,
+        "rewardCoin": 1000
+    },
+    "WORK": {
+        "cooldownTime": 1200000
+    },
+    "FISH": {
+        "cooldownTime": 1000000
+    },
+    "CAVE": {
+        "cooldownTime": 2000000
+    },
+    "LIXI": {
+        "cooldownTime": 1100000
+    },
+    "LOTO": {
+        "maxPlayers": 10,
+        "getDelay": 8
+    },
+    "XIDACH": {
+        "maxPlayers": 5,
+        "normalWinBonus": 1,
+        "superWinBonus": 2,
+        "epicWinBonus": 4
+    },
+    "JOB": {
+        "cooldownTime": 5000
+    },
+    "ANIME": {
+        "cooldownTime": 1200000
+    },
+    "MENU": {
+        "autoUnsend": true,
+        "delayUnsend": 55
+    },
+    "HELP": {
+        "autoUnsend": true,
+        "delayUnsend": 120
+    },
+    "RANKUP": {
+        "autoUnsend": true,
+        "unsendMessageAfter": 10
+    },
+    "ADMINUPDATE": {
+        "autoUnsend": true,
+        "sendNoti": true,
+        "timeToUnsend": 10
+    },
+    "SING": {
+        "YOUTUBE_API": "AIzaSyDdzsxzYZAoBCxF-TXQyVhd52_Tslu-FXU",
+        "SOUNDCLOUD_API": "M4TSyS6eV0AcMynXkA3qQASGcOFQTWub"
+    },
+    "SOUNDCLOUD": {
+        "SOUNDCLOUD_API": "M4TSyS6eV0AcMynXkA3qQASGcOFQTWub"
+    },
+    "WEATHER": {
+        "OPEN_WEATHER": "c4ef85b93982d6627681b056e24bd438"
+    },
+    "GIF": {
+        "TENOR": "73YIAOY3ACT1"
+    },
+    "SIM": {
+        "APIKEY": "Priyansh_1234567890"
+    },
+    "TIKTOK": {
+        "API_KEY": "mzkFree_XNPP4LYOG9H8VY83GHG"
+    },
+    "SAUCE": {
+        "SAUCENAO_API": "29be078b8f5239a1202742869f92c25955bdcab3"
+    },
+    "SHORTLINK": {
+        "bitlyAPI": "150ef1bc3af86500796d645c86f56766e4802566"
+    },
+    "FBSHORTLINK": {
+        "APIKEY": "mi451266190"
+    },
+    "VOICE": {
+        "zalo_apikey": "r5lKNWX89OJEJMXlUEpGEzcjByjGb2F0",
+        "fpt_apikey": "MhYPX3ksxwdqLC63LiAR4r47sOrkSdhj"
+    },
+    "COVER": {
+        "APIKEY": "tdunguwu"
+    },
+    "MKT": {
+        "APIKEY": "tdunguwu"
+    },
+    "MOON": {
+        "APIKEY": "tdunguwu"
+    },
+    "CARDINFO": {
+        "APIKEY": "tuandz"
+    },
+    "GHÉP": {
+        "APIKEY": "nhatdepzaivl"
+    },
+    "POKEMON": {
+        "APIKEY": ""
+    },
+    "SUBNAUTICA": {
+        "APIKEY": ""
+    },
+    "MINE": {
+        "APIKEY": ""
+    },
+    "RADIO": {
+        "YOUTUBE_API": "AIzaSyA81xmaIo6uozgapDe7_yDjFfnOwkfx_XA"
+    },
+    "MUSIC": {
+        "YOUTUBE_API": "AIzaSyAwzbcb-6QAzgZtl4qf3Z2GhQ3mqrbbMR8"
+    },
+    "VIDEO": {
+        "YOUTUBE_API": "AIzaSyAE4wH3OSfPUjJZTJvByQfXhEuaBMXjzAA"
+    },
+    "YOUTUBE": {
+        "YOUTUBE_API": "AIzaSyBNqRSYmQ9D1WWIa186k8nSvo5mr2Rvk5M"
+    },
+    "NGANHANG": {
+        "key": "DUBFREE"
+    }
+}
